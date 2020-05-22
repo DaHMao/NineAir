@@ -1,0 +1,89 @@
+{
+  "status": 200,
+  "code": null,
+  "msg": "成功",
+  "data": {
+    "sessionId": null,
+    "data": {
+      "orderType": "",
+      "amount": "399",
+      "passengers": [
+        {
+          "birthday": "2000-05-18T16:00:00.000Z",
+          "passengerName": "李柯",
+          "fare": "349",
+          "credentialsNo": "513436200005199192",
+          "gender": "M",
+          "actualPrice": "349",
+          "segList": [
+            {
+              "serviceType": "标准经济舱",
+              "actualPrice": "349",
+              "discount": "10",
+              "segIndex": "1",
+              "type": "D",
+              "travelDirect": "",
+              "arriveTime": "19:05",
+              "orgCode": "CAN",
+              "id": "",
+              "orderItemIndex": 1,
+              "amount": "349",
+              "departTime": "16:05",
+              "destCode": "TSN",
+              "arriveDate": "2020-05-21",
+              "itemServiceList": [],
+              "priceType": null,
+              "tax": "",
+              "bookClass": "Y",
+              "planeType": "B738",
+              "carrier": "AQ",
+              "fightNo": "1055",
+              "name": "",
+              "departDate": "2020-05-21",
+              "passengerId": "0",
+              "couponPrice": 30.0,
+              "pointPrice": null,
+              "couponCouponId": "fbd215e5-62c5-46d1-b3e4-30b3bf7d7d27",
+              "status": null
+            }
+          ],
+          "credentialsType": "NI",
+          "paxMemberType": "",
+          "mprInfo": "",
+          "passengerType": "ADT",
+          "specialType": "",
+          "issuanceDate": "",
+          "ticketStatus": ""
+        }
+      ],
+      "channelNo": "B2C",
+      "orderId": "0",
+      "accountType": "",
+      "orderStatus": "",
+      "language": "zh_CN",
+      "type": null,
+      "token": "BA0A75FF1F4241CDA5D7C6235D9F232D",
+      "saleTimeCode": null,
+      "travelItinerary": [
+        {
+          "rightsTime": "",
+          "rightsType": "0",
+          "mailAddress": ""
+        }
+      ],
+      "refundType": "",
+      "couponList": [
+        {
+          "couponId": "fbd215e5-62c5-46d1-b3e4-30b3bf7d7d27",
+          "couponCode": ""
+        }
+      ],
+      "subPoints": "0",
+      "isRefundOrder": "",
+      "currency": "CNY",
+      "couponPrice": 30.0,
+      "routeType": "OW",
+      "memberId": "5156063"
+    }
+  }
+}

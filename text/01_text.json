@@ -1,0 +1,12 @@
+{
+  "tripType": 1,
+  "fromCity": "CSX",
+  "toCity": "HAK",
+  "fromDate": "2020-05-27",
+  "retDate": "",
+  "flightNo": "",
+  "cabin": "",
+  "adultNum": 1,
+  "childNum": 0,
+  "infantNum": 0
+}
