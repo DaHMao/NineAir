@@ -1,37 +1,57 @@
-from AQ.AQ_order import Order
-from AQ.AQ_login import Login
-from AQ.save_phone_pwd import r
+from AQ.AQ_order import Order, get_cookie
 from aq_log.Journal_class import Journal
-from aq_log.loghelper import __write_log__
 import json
+import traceback
+import time
 
 
-def do_order(d, llog=""):
-    log = ""
-    phone = r.get_a_phone_number()
-    data = {
-        "user": phone[0],
-        "pwd": phone[1],
-        "passengers": d.get("passengers")
-    }
-    print(data)
-    login = Login(data=data).do_add_passenger_login()
-    if isinstance(login, dict):
-        return login
-    d.get("loginInfo")["loginUser"] = phone[0]
-    d.get("loginInfo")["loginPwd"] = phone[1]
-    order = Order(data=d).do_order()
-    resp = {
-        "请求数据": d,
-        "响应数据": order
-    }
-    if order.get("status") == 500:
-        Journal().save_journal_order(massage=json.dumps(resp), level="error")
-    else:
-        Journal().save_journal_order(massage=json.dumps(resp))
-    log = log + str(json.dumps(resp)) + '\n'
-    __write_log__(log, tag="_order_")
-    return order
+def do_order(params, llog=""):
+    """
+    执行生单
+    :param params:
+    :return:
+    """
+    start_time = time.time()
+    res_user = get_cookie()
+    if isinstance(res_user, dict):
+        res_user["status"] = 404
+        res_user["index"] = "get_cookie,请求账号中心失败"
+        end_time = time.time()
+        resp = {
+            "请求数据": params,
+            "响应数据": res_user,
+            "生单耗时": str(end_time - start_time)
+        }
+        Journal().save_journal_order(massage=json.dumps(resp), level="error", field1=str(end_time - start_time))
+        return res_user
+    params["loginInfo"]["loginUser"] = res_user[0]
+    params["loginInfo"]["loginPwd"] = res_user[1]
+    params["ip"] = res_user[2]
+    params["cookies"] = res_user[3]
+    try:
+        order_o = Order(data=params).do_order()
+        end_time = time.time()
+        resp = {
+            "请求数据": params,
+            "响应数据": order_o,
+            "生单耗时": str(end_time - start_time)
+        }
+        if order_o.get("status") == 0:
+            Journal().save_journal_order(massage=json.dumps(resp), field1=str(end_time - start_time))
+        else:
+            Journal().save_journal_order(massage=json.dumps(resp), level="warn", field1=str(end_time - start_time))
+        return order_o
+    except Exception as e:
+        print(e)
+        ret = {'status': 5, 'msg': traceback.format_exc()}
+        end_time = time.time()
+        resp = {
+            "请求数据": params,
+            "响应数据": ret,
+            "生单耗时": str(end_time - start_time)
+        }
+        Journal().save_journal_order(massage=json.dumps(resp), level="error", field1=str(end_time - start_time))
+        return ret
 
 
 if __name__ == "__main__":

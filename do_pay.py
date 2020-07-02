@@ -1,24 +1,22 @@
+# --coding:utf-8--
 from AQ.AQ_pay import Pay
 import json
 from pika.exceptions import AMQPConnectionError
 from AQ.pay_queue_center import MsgRpcClient
 from aq_log.Journal_class import Journal
 import traceback
-from aq_log.loghelper import __write_log__
 
 
 def do_do_pay(data_r, llog=""):
     log = ""
     pay = Pay(data=data_r).do_pay()
     if isinstance(pay, dict):
-        if pay.get("status") == 500:
+        if pay.get("status") in (500, 404):
             resp = {
                 "请求数据": data_r,
                 "响应数据": pay
             }
             Journal().save_journal_pay(massage=json.dumps(resp), level="error")
-            log = log + str(json.dumps(resp)) + '\n'
-            __write_log__(log, tag="_pay_")
             return pay
         else:
             resp = {
@@ -26,8 +24,6 @@ def do_do_pay(data_r, llog=""):
                 "响应数据": pay
             }
             Journal().save_journal_pay(massage=json.dumps(resp))
-            log = log + str(json.dumps(resp)) + '\n'
-            __write_log__(log, tag="_pay_")
             return pay
     print("开始发送请求...", end="")
     param = {
@@ -62,8 +58,6 @@ def do_do_pay(data_r, llog=""):
                 "响应数据": res
             }
             Journal().save_journal_pay(massage=json.dumps(resp))
-            log = log + str(json.dumps(resp)) + '\n'
-            __write_log__(log, tag="_pay_")
             return res
         else:
             res["user"] = pay[4]
@@ -72,9 +66,7 @@ def do_do_pay(data_r, llog=""):
                 "请求数据": data_r,
                 "响应数据": res
             }
-            Journal().save_journal_pay(massage=json.dumps(resp))
-            log = log + str(json.dumps(resp)) + '\n'
-            __write_log__(log, tag="_pay_")
+            Journal().save_journal_pay(massage=json.dumps(resp), level="warn")
             return res
     except AMQPConnectionError:
         print("fail→连接失败")
@@ -87,8 +79,6 @@ def do_do_pay(data_r, llog=""):
             "响应数据": pay
         }
         Journal().save_journal_pay(massage=json.dumps(resp), level="warn")
-        log = log + str(json.dumps(resp)) + '\n'
-        __write_log__(log, tag="_pay_")
         return pay
     except TimeoutError:
         pay = {
@@ -100,10 +90,9 @@ def do_do_pay(data_r, llog=""):
             "响应数据": pay
         }
         Journal().save_journal_pay(massage=json.dumps(resp), level="warn")
-        log = log + str(json.dumps(resp)) + '\n'
-        __write_log__(log, tag="_pay_")
         return pay
-    except Exception:
+    except Exception as e:
+        print(e)
         pay = {
             "status": 1,
             "msg": f"支付时遇到异常，请人工手动登录查看是否支付成功,账号：{pay[4]}，密码：{pay[5]},"
@@ -113,7 +102,5 @@ def do_do_pay(data_r, llog=""):
             "请求数据": data_r,
             "响应数据": pay
         }
-        Journal().save_journal_pay(massage=json.dumps(resp), level="warn")
-        log = log + str(json.dumps(resp)) + '\n'
-        __write_log__(log, tag="_pay_")
+        Journal().save_journal_pay(massage=json.dumps(resp), level="error")
         return pay

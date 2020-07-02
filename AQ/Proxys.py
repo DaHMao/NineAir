@@ -2,12 +2,11 @@
 import requests
 from requests.exceptions import ConnectionError, ProxyError, ReadTimeout, ConnectTimeout
 import urllib3
-import time
 
 urllib3.disable_warnings()
 
 
-def get_proxy( stop=0):
+def get_proxy(stop=0):
     global res
     try:
         url = 'http://ip.ystrip.cn:8080/api/Vps/GetUsed?group={}&user=AQ'.format(random.choice(['isearch']))
@@ -38,4 +37,5 @@ def freed_proxy(host, typ='false'):
 
 
 if __name__ == '__main__':
+    print(freed_proxy(host=""))
     pass

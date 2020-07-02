@@ -11,7 +11,6 @@ from pika.spec import BasicProperties
 from functools import singledispatch
 from do_order import do_order
 
-
 APP_NAME = "九元航空"
 APP_VERSION = "v1.0"
 AUTHOR = "MDH"
@@ -244,5 +243,5 @@ class PIKA(object):
 
 if __name__ == '__main__':
     PIKA(
-        "YS.机票.国内.生单.同程券",
+        # "YS.机票.国内.生单.同程券",
     )

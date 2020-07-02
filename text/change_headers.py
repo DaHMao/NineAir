@@ -1,15 +1,17 @@
 s = """
 Host: www.9air.com
 Connection: keep-alive
-Accept: application/json, text/plain, */*
+Content-Length: 37
 Pragma: no-cache
-Cache-Control: must-revalidate
 Accept-Language: zh_CN
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36
+Content-Type: application/json;charset=UTF-8
+Accept: application/json, text/plain, */*
+Cache-Control: must-revalidate
 Expires: 0
-Referer: http://www.9air.com/zh-CN/member/ticketorderdetail/20200521B2COW2045145
+Origin: http://www.9air.com
+Referer: http://www.9air.com/zh-CN/member
 Accept-Encoding: gzip, deflate
-
 
 """
 dd = {}

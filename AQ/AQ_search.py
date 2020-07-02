@@ -1,11 +1,26 @@
 # --coding:utf-8--
 from AQ.Proxys import *
-from requests.exceptions import ConnectionError, ConnectTimeout, ReadTimeout, ProxyError
-from urllib3.exceptions import MaxRetryError, NewConnectionError
-from OpenSSL.SSL import Error, WantReadError
-import traceback
-import json
+from AQ.setting import *
 
+
+def try_except_request(func):
+    def fun_1(self, *args, **kwargs):
+        try:
+            msg = func(self, *args, **kwargs)
+            return msg
+        except exceptions:
+            freed_proxy(host=self.host)
+            ip = get_proxy()[0]
+            host = get_proxy()[1]
+            if ip:
+                self.ip = ip
+                self.host = host
+            else:
+                self.ip = None
+                self.host = ""
+            return eval('self.{}(*args, **kwargs)'.format(func.__name__))
+
+    return fun_1
 
 
 class Search(object):
@@ -19,14 +34,15 @@ class Search(object):
         self.adultNum = data.get("adultNum")
         self.childNum = data.get("childNum")
         self.infantNum = data.get("infantNum")
+        self.flightNo = data.get("flightNo")
         self.price_L = []
         self.flights_L = []
         self.journeys = []
         proxy = get_proxy()
         self.ip = proxy[0]
         self.host = proxy[1]
-        print(proxy)
 
+    @try_except_request
     def search_flight(self):
         """
         搜索航班
@@ -147,7 +163,7 @@ class Search(object):
                             flig = {
                                 "extra": segment.get("model"),
                                 "carrier": segment.get("carrierAirlineCode"),
-                                "flightNumber": segment.get("carrierAirlineCode") + segment.get("carrierFlightNo"),
+                                "flightNumber": segment.get("carrierAirlineCode") + segment.get("marketFlightNo"),
                                 "depAirport": segment.get("departAirportCode"),
                                 "depTime": segment.get("departDate") + " " + segment.get("departTime"),
                                 "arrAirport": segment.get("arrivalAirportCode"),
@@ -161,10 +177,14 @@ class Search(object):
                             flights_ll.append(flig)
                     else:
                         continue
-                    self.journeys.append({
-                        "flights": flights_ll,
-                        "prices": price_ll
-                    })
+                    if flights_ll[0].get("flightNumber") == self.flightNo:
+                        self.journeys.append({
+                            "flights": flights_ll,
+                            "prices": price_ll
+                        })
+                    else:
+                        continue
+
             if self.journeys:
                 return {
                     "status": 0,
@@ -173,47 +193,32 @@ class Search(object):
                 }
             else:
                 return {
-                    "status": 3,
+                    "status": 11,
                     "msg": "查询航班成功，该航班没有查询到任何机票价格信息"
                 }
         else:
             return {
-                "status": 3,
+                "status": 11,
                 "msg": "查询航班成功，该航段无所查询的航班"
             }
 
     def do_search(self):
-        i = 0
-        while i < 3:
-            try:
-                res = self.search_flight()
-                if res.get("status") != 200:
-                    res["index"] = "search_flight"
-                    return res
-                res_01 = self.analysis_flight(flights=res)
-                if res_01.get("status") != 0:
-                    res_01["index"] = "analysis_flight"
-                    return res_01
-                return res_01
-            except (
-                    ConnectionError, ConnectTimeout, ReadTimeout, ProxyError, Error, WantReadError, MaxRetryError,
-                    NewConnectionError, json.decoder.JSONDecodeError):
-                i += 1
-                freed_proxy(host=self.host)
-            except Exception:
-                return {'status': 500, 'msg': traceback.format_exc()}
-        else:
-            return {
-                "status": 3,
-                "msg": "询价失败，ip问题，请稍后重试"
-            }
+        res = self.search_flight()
+        if res.get("status") != 200:
+            res["index"] = "search_flight"
+            return res
+        res_01 = self.analysis_flight(flights=res)
+        if res_01.get("status") != 0:
+            res_01["index"] = "analysis_flight"
+            return res_01
+        return res_01
 
 
 random_to_city = ["TSN", "HAK", "DLC", "WUX"]
 
-from_date = ["2020-06-15", "2020-06-11", "2020-06-12", "2020-06-18", "2020-07-14", "2020-07-02", "2020-07-19",
-             "2020-07-12", "2020-06-26", "2020-06-23", "2020-06-21", "2020-06-03", "2020-06-22", "2020-06-12",
-             "2020-06-06", "2020-06-12", "2020-06-19", "2020-07-08"]
+from_date = ["2020-07-15", "2020-07-11", "2020-07-12", "2020-07-18", "2020-07-14", "2020-07-02", "2020-07-19",
+             "2020-07-12", "2020-07-26", "2020-07-23", "2020-07-21", "2020-07-03", "2020-07-22", "2020-07-12",
+             "2020-07-06", "2020-07-12", "2020-07-19", "2020-07-08"]
 
 
 def do_():
@@ -221,9 +226,9 @@ def do_():
         "tripType": 1,
         "fromCity": "CSX",
         "toCity": "HAK",
-        "fromDate": "2020-05-27",
+        "fromDate": "2020-07-27",
         "retDate": "",
-        "flightNo": "",
+        "flightNo": "AQ1145",
         "cabin": "",
         "adultNum": 1,
         "childNum": 0,
@@ -232,7 +237,7 @@ def do_():
     return Data
 
 
-
 if __name__ == "__main__":
     print(do_())
-
+    search = Search(data=do_())
+    print(search.do_search())

@@ -1,3 +1,4 @@
+# --coding:utf-8--
 from AQ.get_phone_v import GetNumberCodeByBM
 from AQ.setting import *
 from AQ.Proxys import *
@@ -10,8 +11,7 @@ import json
 
 class Register(object):
     def __init__(self, data):
-        self.ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Ap" \
-                  "pleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36"
+        self.ua = random.choice(USER_AGENT)
         self.user = data.get("user")
         self.pwd = data.get("pwd")
         proxy = get_proxy()

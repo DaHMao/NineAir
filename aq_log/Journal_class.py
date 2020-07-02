@@ -1,3 +1,4 @@
+# --coding:utf-8--
 import requests
 from datetime import datetime, timezone, timedelta
 
@@ -38,11 +39,56 @@ class Journal(object):
         r = requests.post(url, json=data, headers=headers)
         return r.json()
 
-    def save_journal_search(self, massage="success", level="Info"):
+    def save_journal_login(self, massage="success", level="Info"):
+        """
+        登录 日志
+        :param massage: 返回结果
+        :param level:
+        :return:
+        """
+        url = "http://192.168.0.212:8081/log/save"
+        headers = {
+            "Content-Type": "application/json"
+        }
+        data = {
+            "project": "九元航空",  # 项目名称
+            "module": "登录",  # 模块名称
+            "message": massage,  # string 日志内容文本
+            "time": self.get_time(),  # string 一定有T，Z
+            "level": level,  # 日志等级 info warn error fatal
+            "user": "毛大华",  # string 工号， 用于发送钉钉消息
+        }
+        r = requests.post(url, json=data, headers=headers)
+        return r.json()
+
+    def save_journal_keep_cookie(self, massage="success", level="Info"):
+        """
+        会话保持 日志
+        :param massage: 返回结果
+        :param level:
+        :return:
+        """
+        url = "http://192.168.0.212:8081/log/save"
+        headers = {
+            "Content-Type": "application/json"
+        }
+        data = {
+            "project": "九元航空",  # 项目名称
+            "module": "会话保持",  # 模块名称
+            "message": massage,  # string 日志内容文本
+            "time": self.get_time(),  # string 一定有T，Z
+            "level": level,  # 日志等级 info warn error fatal
+            "user": "毛大华",  # string 工号， 用于发送钉钉消息
+        }
+        r = requests.post(url, json=data, headers=headers)
+        return r.json()
+
+    def save_journal_search(self, massage="success", level="Info", field1=""):
         """
         询价日志
         :param massage:
         :param level:
+        :param field1:
         :return:
         """
         url = "http://192.168.0.212:8081/log/save"
@@ -56,13 +102,15 @@ class Journal(object):
             "time": self.get_time(),  # string 一定有T，Z
             "level": level,  # 日志等级 info warn error fatal
             "user": "毛大华",  # string 工号， 用于发送钉钉消息
+            "field1": field1
         }
         r = requests.post(url, json=data, headers=headers)
         return r.json()
 
-    def save_journal_order(self, massage="success", level="Info"):
+    def save_journal_order(self, massage="success", level="Info", field1=""):
         """
         生单日志
+        :param field1:
         :param massage:
         :param level:
         :return:
@@ -78,6 +126,7 @@ class Journal(object):
             "time": self.get_time(),  # string 一定有T，Z
             "level": level,  # 日志等级 info warn error fatal
             "user": "毛大华",  # string 工号， 用于发送钉钉消息
+            "field1": field1
         }
         r = requests.post(url, json=data, headers=headers)
         return r.json()
